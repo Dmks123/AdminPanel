@@ -24,6 +24,8 @@ export default function PartnerDetails() {
   const [showref, toggleShowref] = useState(false);
   const [showreftds, toggleshowreftds] = useState(false);
   const [showprofilepic, toggleShowProfilepic] = useState(false);
+  const [showeditsqft, toggleshoweditsqft] = useState(false);
+  const [showperprojectamt, toggleshowperprojectamt] = useState(false);
   const { Id } = useParams();
   console.log("id", Id);
   // var DownloadButton = require('downloadbutton/es5');
@@ -63,6 +65,7 @@ export default function PartnerDetails() {
   // const [isFilePicked, setIsFilePicked] = useState(false);
 
   const [msg, Setmsg] = useState([]);
+  const [referalcode, Setreferalcode] = useState([]);
 
   const changePhoto = (e) => {
     setSelectedPhoto(e.target.files[0]);
@@ -82,6 +85,8 @@ export default function PartnerDetails() {
   const [noofdays, Setnoofdays] = useState([]);
   const [targettobeachieved, Settargettobeachieved] = useState([]);
   const [tdsvalue, Settdsvalue] = useState(1);
+  const [Persfamt, SetPersfamt] = useState([50]);
+  const [Perprojectamt, SetPerprojectamt] = useState([100000]);
   useEffect(() => {
     console.log(refjoiningdate);
     axios
@@ -100,6 +105,10 @@ export default function PartnerDetails() {
         // Contact info
         Setrefemail(reps.data.partners[0].email);
         Setrefmobile(reps.data.partners[0].mobile);
+
+        SetPersfamt(reps.data.partners[0].persfamt);
+        SetPerprojectamt(reps.data.partners[0].perprojectamt);
+        console.log("Persfamt", reps.data.partners[0].persfamt);
       });
 
     // to fetch bank details api
@@ -156,7 +165,54 @@ export default function PartnerDetails() {
         Setmsg(resultds.data.msg);
         console.log("TDS", resultds);
       });
+
+    // Fetch Referal Code
+    axios
+      .get(`https://pure-wave-48602.herokuapp.com/getrefcode?_id=${Id}`)
+      .then((resultrefcode) => {
+        Setreferalcode(resultrefcode.data.referralcode);
+        console.log("REF COde", resultrefcode);
+      });
   }, []);
+
+  // Update referal code
+
+  const updatereferalcode = (e) => {
+    // alert("hello World");
+    e.preventDefault();
+    const updateref = {
+      referralcode: referalcode,
+    };
+    console.log("data", updateref);
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    axios
+      .post(
+        `https://pure-wave-48602.herokuapp.com/updaterefcode?_id=${Id}`,
+        updateref,
+        {
+          headers,
+        }
+      )
+      .then((res) => {
+        console.log("Hello Don", res);
+        let Status = res.data.status;
+        if (Status === "success") {
+          alert("Profile Details are edited sucessfully");
+          // window.setTimeout(function () {
+          //   window.location.reload();
+          // }, 100);
+        } else if (Status === "failed") {
+          alert("Profile Details are already exists");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("Some Internal Error", err);
+      });
+  };
 
   const verifyit = () => {
     console.log("insside that verify btn function");
@@ -233,16 +289,10 @@ export default function PartnerDetails() {
       location: refworkloc,
       email: refemail,
       mobile: refmobile,
-      // partnerName: refpatname,
-      // bankName: refbankname,
-      // branch: refbranchname,
-      // accountNumber: refaccno,
-      // ifscCode: refifsccode,
-      // accountType: refbankacctype,
-      // panNumber: refpanno,
-      // adharNumber: refaadharno,
       noOfdays: targetdetails.noOfdays,
       noOfTarget: targetdetails.noOfTarget,
+      persfamt: Persfamt,
+      perprojectamt: Perprojectamt,
     };
     console.log("data", upddata);
     const headers = {
@@ -452,7 +502,7 @@ export default function PartnerDetails() {
           <div className="content-tabs">
             <div>
               <div className="row top_menu_bar">
-                <div className="col-md-8 d-flex align-items-center">
+                <div className="col-md-5 d-flex align-items-center">
                   <Link to="/rplist" className="partner_back_btn">
                     <span>
                       <ArrowBackIosNewIcon />
@@ -460,15 +510,82 @@ export default function PartnerDetails() {
                     </span>
                   </Link>
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-7">
                   <div className="d-flex justify-content-around">
                     <button
                       className="add_btn"
                       data-toggle="modal"
                       data-target=".bd-example-modal-lg_ref3"
                     >
-                      <EditIcon className="search_icons" />
-                      50/Sq. ft
+                      <div
+                        className="edit_icon"
+                        onClick={() => toggleshoweditsqft(!showeditsqft)}
+                      >
+                        {!showeditsqft && (
+                          <div>
+                            {Persfamt != undefined ? Persfamt : 50}/Sq. ft
+                            <EditIcon className="search_icons" />
+                          </div>
+                        )}
+                        {showeditsqft && (
+                          <div>
+                            <input
+                              type="text"
+                              value={Persfamt}
+                              onChange={(e) => {
+                                SetPersfamt(e.target.value);
+                              }}
+                            />
+                            <button
+                              type="submit"
+                              className="edit_icon"
+                              onClick={mydetails}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                    <button
+                      className="add_btn"
+                      data-toggle="modal"
+                      data-target=".bd-example-modal-lg_ref3"
+                    >
+                      <div
+                        className="edit_icon"
+                        onClick={() =>
+                          toggleshowperprojectamt(!showperprojectamt)
+                        }
+                      >
+                        {!showperprojectamt && (
+                          <div>
+                            {Perprojectamt != undefined
+                              ? Perprojectamt
+                              : 100000}
+                            /Per Project Amount
+                            <EditIcon className="search_icons" />
+                          </div>
+                        )}
+                        {showperprojectamt && (
+                          <div>
+                            <input
+                              type="text"
+                              value={Perprojectamt}
+                              onChange={(e) => {
+                                SetPerprojectamt(e.target.value);
+                              }}
+                            />
+                            <button
+                              type="submit"
+                              className="edit_icon"
+                              onClick={mydetails}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </button>
                     <div className="dropdown verify_btn">
                       <button
@@ -1464,7 +1581,7 @@ export default function PartnerDetails() {
                                     <button
                                       type="submit"
                                       className="edit_icon"
-                                      // onClick={mydetails}
+                                      onClick={updatereferalcode}
                                     >
                                       Save
                                     </button>
@@ -1476,7 +1593,7 @@ export default function PartnerDetails() {
                               <div className="viewing_details">
                                 <div className="row">
                                   <div className="col-6 col-md-6">
-                                    <div>4560877</div>
+                                    <div>{referalcode}</div>
                                   </div>
                                 </div>
                               </div>
@@ -1492,9 +1609,9 @@ export default function PartnerDetails() {
                                         required
                                         id="inputName"
                                         name="name"
-                                        //   value={name}
+                                        value={referalcode}
                                         onChange={(e) => {
-                                          // setName(e.target.value);
+                                          Setreferalcode(e.target.value);
                                         }}
                                       />
                                     </div>
@@ -1636,7 +1753,7 @@ export default function PartnerDetails() {
                     </div>
                     <div className="mt-3">
                       <div>
-                        <Link to={`/referedlead/:${Id}`}>
+                        <Link to={`/referedlead/${Id}`}>
                           <button className="refered_lead_btn">
                             Refered Leads
                           </button>

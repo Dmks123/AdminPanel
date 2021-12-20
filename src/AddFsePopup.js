@@ -9,7 +9,7 @@ import axios from "axios";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import $ from "jquery";
 
-const AddReferalPopup = ({ ids }) => {
+const AddFsePopup = ({ ids }) => {
   const phoneRegex = RegExp(
     /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
   );
@@ -19,24 +19,15 @@ const AddReferalPopup = ({ ids }) => {
       .min(3, "Name Must Be Atleast 3 characters or less")
       .max(15, "Name Must Not More Than 15 characters!!")
       .required("Name is Required"),
-    email: Yup.string().email("Email is invalid").required("Email is required"),
-    phone_number: Yup.string()
+    // email: Yup.string().email("Email is invalid").required("Email is required"),
+    mobileno: Yup.string()
       .matches(phoneRegex, "Invalid Phone Number")
-      .required("Phone Number is required")
+      .required("Employee Id is required")
       .max(10, "Phone Number Must Not More Than 10 Digits"),
-    // company_name: Yup.string().required("Company Name is required"),
-    // total_expernice: Yup.string().required("Total Expernice is required"),
-    // designation: Yup.string().required("Designation is required"),
-    // work_location: Yup.string().required("Work Location is required"),
-    // date_of_birth: Yup.string().required("Date of BIrth is required"),
-    // joining_date: Yup.date().required("Joining Date is Required"),
-    pack: Yup.string().required("Mention package"),
-    sqft: Yup.string().required("Enter the Area in Sqft"),
-    bookingamt: Yup.string().required("Enter the booking amount"),
-    // paymentstage: Yup.string().required("Enter the Payment Stage"),
-    // statuss: Yup.string().required("Enter the Status"),
-    location: Yup.string().required("Enter the Location"),
-    startdate: Yup.string().required("Date of Birth is required"),
+    designation: Yup.string().required("Designation is required"),
+    empid: Yup.string().required("Employee Id is Required"),
+    fsecode: Yup.string().required("Fse code is required"),
+    joindate: Yup.string().required("Date of Joining is required"),
     profilepic: Yup.string().required("Please upload profile pic"),
   });
 
@@ -45,15 +36,11 @@ const AddReferalPopup = ({ ids }) => {
       <Formik
         initialValues={{
           full_name: "",
-          email: "",
-          phone_number: "",
-          pack: "",
-          sqft: "",
-          bookingamt: "",
-          paymentstage: "",
-          //   statuss: "",
-          location: "",
-          startdate: "",
+          mobileno: "",
+          designation: "",
+          empid: "",
+          fsecode: "",
+          joindate: "",
           profilepic: "",
         }}
         validationSchema={validate}
@@ -63,44 +50,31 @@ const AddReferalPopup = ({ ids }) => {
           let verify = localStorage.getItem("_id");
           console.log(verify);
 
-          const dataq = {
+          const datafse = {
             name: values.full_name,
-            packagename: values.pack,
-            email: values.email,
-            contact_no: values.phone_number,
-            area: values.sqft,
-            booking_amt: values.bookingamt,
-            location: values.location,
-            start_date: values.startdate,
-
-            // companyname: values.company_name,
-            // experience: values.total_expernice,
-            // designation: values.designation,
-            // location: values.work_location,
-            // dob: values.date_of_birth,
-            // doj: values.joining_date,
+            mobile: values.mobileno,
+            employee_id: values.empid,
+            designation: values.designation,
+            doj: values.joindate,
+            fsecode: values.fsecode,
           };
 
-          console.log("Data", dataq);
+          console.log("Data", datafse);
 
           const headers = {
             "Content-Type": "application/json",
           };
 
           axios
-            .post(
-              `https://pure-wave-48602.herokuapp.com/addcustomer?_id=${ids}`,
-              dataq,
-              {
-                headers,
-              }
-            )
+            .post(`https://pure-wave-48602.herokuapp.com/addfse`, datafse, {
+              headers,
+            })
             .then((res) => {
               console.log(res);
               let Status = res.data.status;
               if (Status === 200) {
                 console.log("added sucessfully");
-                history.push("/referedlead");
+                history.push("/fselist");
                 // $(".popup-add_hot-lead-added").show();
                 // $(".bd-example-modal-lg_ref3").modal("hide");
               } else if (Status === "failed") {
@@ -115,35 +89,10 @@ const AddReferalPopup = ({ ids }) => {
             <Form>
               <div className="d-flex justify-content-between">
                 <div className="p-3" style={{ width: "100%" }}>
-                  <div className="pb-3">
-                    <span className="add_hot_lead_label">
-                      {/* <LocalFireDepartmentIcon
-                        style={{
-                          color: "red",
-                        }}
-                      /> */}
-                      Add Lead
-                    </span>
-                    <button
-                      type="button"
-                      className="close"
-                      data-dismiss="modal"
-                      aria-label="Close"
-                      id="CloseAddHotLeadPopup"
-                      style={{
-                        background: "transparent",
-                        float: "right",
-                        color: "red",
-                      }}
-                    >
-                      <span aria-hidden="true">X Close</span>
-                    </button>
-                  </div>
-
                   <div>
                     <div className="p-3 add_hot_lead_content">
                       <div className="row ">
-                        <div className="col-md-6">
+                        <div className="col-md-12">
                           <div className="input-group_add_hot_lead ">
                             <TextField
                               type="text"
@@ -164,36 +113,17 @@ const AddReferalPopup = ({ ids }) => {
                             </label> */}
                           </div>
                         </div>
-                        <div className="col-md-6">
+                      </div>
+                      <div className="row pb-3">
+                        <div className="col-6 col-sm-6">
                           <div className="input-group_add_hot_lead ">
                             <TextField
                               type="text"
                               // className="input-area_add_hot_lead"
                               // required
                               // id="inputEmail"
-                              name="pack"
-                              label="Package"
-                              // autoComplete="off"
-                            />
-                            {/* <label
-                              htmlFor="inputEmail"
-                              className="label_add_hot_lead"
-                            >
-                              Email
-                            </label> */}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row pb-3">
-                        <div className="col-6 col-sm-6">
-                          <div className="input-group_add_hot_lead ">
-                            <TextField
-                              type="email"
-                              // className="input-area_add_hot_lead"
-                              // required
-                              // id="inputEmail"
-                              name="email"
-                              label="Email"
+                              name="designation"
+                              label="Designation"
                               // autoComplete="off"
                             />
                             {/* <label
@@ -208,12 +138,12 @@ const AddReferalPopup = ({ ids }) => {
                         <div className="col-6 col-sm-6">
                           <div className="input-group_add_hot_lead ">
                             <TextField
-                              type="tel"
+                              type="text"
                               // className="input-area_add_hot_lead"
                               // required
                               // id="inputNuber"
-                              name="phone_number"
-                              label="Phone Number"
+                              name="empid"
+                              label="Employee Id"
                               // autoComplete="off"
                             />
                             {/* <label
@@ -230,12 +160,12 @@ const AddReferalPopup = ({ ids }) => {
                         <div className="col-6 col-sm-6">
                           <div className="input-group_add_hot_lead ">
                             <TextField
-                              type="number"
+                              type="text"
                               // className="input-area_add_hot_lead"
                               // required
                               // id="inputPlotSize"
-                              name="sqft"
-                              label="Area"
+                              name="fsecode"
+                              label="FSE Code"
                               // autoComplete="off"
                             />
                             {/* <label
@@ -254,8 +184,8 @@ const AddReferalPopup = ({ ids }) => {
                               // className="input-area_add_hot_lead"
                               // required
                               // id="inputDevelopmentName"
-                              name="bookingamt"
-                              label="bookingamt"
+                              name="mobileno"
+                              label="Mobile Number"
                               // autoComplete="off"
                             />
                             {/* <label
@@ -263,70 +193,6 @@ const AddReferalPopup = ({ ids }) => {
                               className="label_add_hot_lead"
                             >
                               Development Name
-                            </label> */}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-6 col-sm-6">
-                          <div className="input-group_add_hot_lead ">
-                            <TextField
-                              type="text"
-                              // className="input-area_add_hot_lead"
-                              // required
-                              // id="inputPlotSize"
-                              name="paymentstage"
-                              label="Payment Stage"
-                              // autoComplete="off"
-                            />
-                            {/* <label
-                              htmlFor="inputPlotSize"
-                              className="label_add_hot_lead"
-                            >
-                              Plot Size
-                            </label> */}
-                          </div>
-                        </div>
-
-                        <div className="col-6 col-sm-6">
-                          <div className="input-group_add_hot_lead ">
-                            <TextField
-                              type="text"
-                              // className="input-area_add_hot_lead"
-                              // required
-                              // id="inputDevelopmentName"
-                              name="statuss"
-                              label="Status"
-                              // autoComplete="off"
-                            />
-                            {/* <label
-                              htmlFor="inputDevelopmentName"
-                              className="label_add_hot_lead"
-                            >
-                              Development Name
-                            </label> */}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-12 col-sm-12">
-                          <div className="input-group_add_hot_lead ">
-                            <TextField
-                              type="text"
-                              // className="input-area_add_hot_lead"
-                              // required
-                              // id="inputLocation"
-                              name="location"
-                              label="Location"
-                              // autoComplete="off"
-                            />
-                            {/* <label
-                              htmlFor="inputLocation"
-                              className="label_add_hot_lead"
-                            >
-                              Location
                             </label> */}
                           </div>
                         </div>
@@ -358,8 +224,8 @@ const AddReferalPopup = ({ ids }) => {
                               // className="input-area_add_hot_lead"
                               // required
                               // id="inputLocation"
-                              name="startdate"
-                              label="construction start"
+                              name="joindate"
+                              label="Joining Date"
                               // autoComplete="off"
                             />
                             {/* <label
@@ -383,7 +249,7 @@ const AddReferalPopup = ({ ids }) => {
                           // data-target="popup-add_hot-lead-added"
                           // data-dismiss="modal"
                         >
-                          Add Customer
+                          Add FSE
                         </button>
                       </div>
 
@@ -453,15 +319,6 @@ const AddReferalPopup = ({ ids }) => {
                   </div>
                 </div>
               </div>
-              {/* <button
-                          className="btn_add_hot_lead"
-                          // type="submit"
-                          data-toggle="modal"
-                          data-target=".popup-add_hot-lead-added"
-                         
-                        >
-                          Apop
-                        </button> */}
             </Form>
           </div>
         )}
@@ -470,4 +327,4 @@ const AddReferalPopup = ({ ids }) => {
   );
 };
 
-export default AddReferalPopup;
+export default AddFsePopup;

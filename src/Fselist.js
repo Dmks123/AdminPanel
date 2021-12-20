@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import AddFsePopup from "./AddFsePopup";
 export default function Fselist() {
   const [fsedata, Setfsedata] = useState([]);
   const [cpdata, Setcpdata] = useState([]);
@@ -48,18 +49,18 @@ export default function Fselist() {
                   <button
                     className="add_btn"
                     data-toggle="modal"
-                    data-target=".bd-example-modal-lg_ref3"
+                    data-target=".bd-example-modal-fse"
                   >
                     <AddIcon className="search_icons" />
                     Add
                   </button>
                   <div
-                    className="modal fade bd-example-modal-lg_ref3"
+                    className="modal fade bd-example-modal-fse"
                     role="dialog"
                     aria-labelledby="myLargeModalLabel"
                     aria-hidden="true"
                   >
-                    <div className="modal-dialog modal-lg modal-dialog-centered  ">
+                    <div className="modal-dialog modal-dialog-centered  ">
                       <div
                         className="modal-content modal_content_whole"
                         style={{ background: "white" }}
@@ -73,7 +74,7 @@ export default function Fselist() {
                           color: "red",
                         }}
                       /> */}
-                              Add Referal Partner
+                              Add Field Sales Executive
                             </span>
                             <span
                               type="button"
@@ -90,31 +91,7 @@ export default function Fselist() {
                               <span aria-hidden="true">X Close</span>
                             </span>
                           </div>
-                          <div className="row">
-                            {" "}
-                            <div className="col-md-5 col-5 d-flex align-items-center justify-content-center">
-                              Area for File Upload
-                              <input type="file" />
-                            </div>
-                            <div className="col-md-1 col-1 d-flex align-items-center justify-content-center flex-column">
-                              <div
-                                style={{
-                                  height: "200px",
-                                  border: "1px solid #969696",
-                                }}
-                              ></div>
-                              <div>OR</div>
-                              <div
-                                style={{
-                                  height: "200px",
-                                  border: "1px solid #969696",
-                                }}
-                              ></div>
-                            </div>
-                            <div className="col-md-6 col-6">
-                              <AddReferalPopup />
-                            </div>
-                          </div>
+                          <AddFsePopup />
                         </div>
                       </div>
                     </div>

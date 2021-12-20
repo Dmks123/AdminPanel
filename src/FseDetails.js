@@ -19,7 +19,15 @@ export default function FseDetails() {
   const [showprofilepic, toggleShowProfilepic] = useState(false);
   // var DownloadButton = require('downloadbutton/es5')
   const [SelectedPhoto, setSelectedPhoto] = useState([]);
+  const [fsefulldetails, Setfsefulldetails] = useState([]);
 
+  // state to set all personal info values of partners
+  const [fsename, Setfsename] = useState([]);
+  const [fsejoiningdate, Setfsejoiningdate] = useState([]);
+  const [fsedesgination, Setfsedesgination] = useState([]);
+  const [fseemployeeid, Setfseemployeeid] = useState([]);
+  const [fsemobileno, Setfsemobileno] = useState([]);
+  const [fsecodevalue, Setfsecodevalue] = useState([]);
   const { Id } = useParams();
   console.log("id", Id);
   // var DownloadButton = require('downloadbutton/es5');
@@ -31,60 +39,74 @@ export default function FseDetails() {
   };
   useEffect(() => {
     axios
-      .get(`https://pure-wave-48602.herokuapp.com/getfse?_id=${Id}`)
+      .get(`https://pure-wave-48602.herokuapp.com/getfsebyid?_id=${Id}`)
       .then((resultdsvalue) => {
-        console.log("FSE details of each customer", resultdsvalue.data.FSE);
+        Setfsefulldetails(resultdsvalue.data.FSE);
+        Setfsename(resultdsvalue.data.FSE[0].name);
+        Setfsejoiningdate(resultdsvalue.data.FSE[0].doj);
+        Setfsedesgination(resultdsvalue.data.FSE[0].designation);
+        Setfseemployeeid(resultdsvalue.data.FSE[0].employee_id);
+        Setfsemobileno(resultdsvalue.data.FSE[0].mobile);
+        Setfsecodevalue(resultdsvalue.data.FSE[0].fsecode);
+        console.log(
+          "FSE details of each customer",
+          resultdsvalue.data.FSE[0].name
+        );
       });
   }, []);
 
-  //   // To update the details
-  //   const mydetails = (e) => {
-  //     // alert("hello World");
-  //     e.preventDefault();
-  //     const upddata = {
-  //       fullname: refnames,
-  //       doj: refjoiningdate,
-  //       companyname: refcompname,
-  //       experience: reftotalexp,
-  //       dob: refdob,
-  //       designation: refdesg,
-  //       partnertype: reftype,
-  //       location: refworkloc,
-  //       email: refemail,
-  //       mobile: refmobile,
-  //       noOfdays: targetdetails.noOfdays,
-  //       noOfTarget: targetdetails.noOfTarget,
-  //     };
-  //     console.log("data", upddata);
-  //     const headers = {
-  //       "Content-Type": "application/json",
-  //     };
+  // To update the details
+  const updatefsedetails = (e) => {
+    // alert("hello World");
+    e.preventDefault();
+    const upddata = {
+      name: fsename,
+      mobile: fsemobileno,
+      employee_id: fseemployeeid,
+      designation: fsedesgination,
+      doj: fsejoiningdate,
+      fsecode: fsecodevalue,
+    };
+    console.log("data", upddata);
+    const headers = {
+      "Content-Type": "application/json",
+    };
 
-  //     axios
-  //       .post(
-  //         `https://pure-wave-48602.herokuapp.com/updatepartner?_id=${Id}`,
-  //         upddata,
-  //         {
-  //           headers,
-  //         }
-  //       )
-  //       .then((res) => {
-  //         console.log("Hello Don", res);
-  //         let Status = res.data.status;
-  //         if (Status === "success") {
-  //           alert("Profile Details are edited sucessfully");
-  //           // window.setTimeout(function () {
-  //           //   window.location.reload();
-  //           // }, 100);
-  //         } else if (Status === "failed") {
-  //           alert("Profile Details are already exists");
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //         alert("Some Internal Error", err);
-  //       });
-  //   };
+    axios
+      .post(
+        `https://pure-wave-48602.herokuapp.com/updatefse?_id=${Id}`,
+        upddata,
+        {
+          headers,
+        }
+      )
+      .then((resultfse) => {
+        console.log("Hello Don", resultfse);
+        let Status = resultfse.data.status;
+        if (Status === "success") {
+          alert("Profile Details are edited sucessfully");
+          // window.setTimeout(function () {
+          //   window.location.reload();
+          // }, 100);
+        } else if (Status === "failed") {
+          alert("Profile Details are already exists");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("Some Internal Error", err);
+      });
+  };
+
+  const deletefsedetails = () => {
+    axios
+      .delete(`https://pure-wave-48602.herokuapp.com/deletefse?_id=${Id}`)
+      .then((resultdel) => {
+        console.log("FSE deleted", resultdel);
+        $(".modal-backdrop").remove();
+        history.push("/fselist");
+      });
+  };
   return (
     <div>
       <div>
@@ -141,7 +163,7 @@ export default function FseDetails() {
                                   <button
                                     type="button"
                                     className="popup_btn_unlinkaccount"
-                                    // onClick={deletepartnerdetails}
+                                    onClick={deletefsedetails}
                                     data-toggle="modal"
                                     data-target=".partner-details-deleted-success"
                                     data-dismiss="modal"
@@ -219,7 +241,7 @@ export default function FseDetails() {
                                 <button
                                   type="submit"
                                   className="edit_icon"
-                                  //   onClick={mydetails}
+                                  onClick={updatefsedetails}
                                 >
                                   Save
                                 </button>
@@ -235,7 +257,9 @@ export default function FseDetails() {
                                   <p className="m-0 admin_type_heading">
                                     Full Name
                                   </p>
-                                  <span className="admin_type_value">Dmk</span>
+                                  <span className="admin_type_value">
+                                    {fsename}
+                                  </span>
                                 </div>
                               </div>
                               <div className="col-6 col-md-2">
@@ -244,7 +268,7 @@ export default function FseDetails() {
                                     Joining Date
                                   </p>
                                   <span className="admin_type_value">
-                                    12/2/2021
+                                    {fsejoiningdate}
                                   </span>
                                 </div>
                               </div>
@@ -253,7 +277,9 @@ export default function FseDetails() {
                                   <p className="m-0 admin_type_heading">
                                     Designation
                                   </p>
-                                  <span className="admin_type_value">Cp</span>
+                                  <span className="admin_type_value">
+                                    {fsedesgination}
+                                  </span>
                                 </div>
                               </div>
                               <div className="col-6 col-md-2">
@@ -261,7 +287,9 @@ export default function FseDetails() {
                                   <p className="m-0 admin_type_heading">
                                     Employee Id
                                   </p>
-                                  <span className="admin_type_value">4</span>
+                                  <span className="admin_type_value">
+                                    {fseemployeeid}
+                                  </span>
                                 </div>
                               </div>
                               <div className="col-6 col-md-2">
@@ -270,7 +298,7 @@ export default function FseDetails() {
                                     Mobile Number
                                   </p>
                                   <span className="admin_type_value">
-                                    2/2/2021
+                                    {fsemobileno}
                                   </span>
                                 </div>
                               </div>
@@ -291,10 +319,10 @@ export default function FseDetails() {
                                     required
                                     id="inputName"
                                     name="name"
-                                    // value={refnames}
-                                    // onChange={(e) => {
-                                    //   Setrefnames(e.target.value);
-                                    // }}
+                                    value={fsename}
+                                    onChange={(e) => {
+                                      Setfsename(e.target.value);
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -307,10 +335,10 @@ export default function FseDetails() {
                                     type="date"
                                     className="input-area admin_partner_det_input"
                                     name="joining_date"
-                                    // value={refjoiningdate}
-                                    // onChange={(e) => {
-                                    //   Setrefjoiningdate(e.target.value);
-                                    // }}
+                                    value={fsejoiningdate}
+                                    onChange={(e) => {
+                                      Setfsejoiningdate(e.target.value);
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -325,10 +353,10 @@ export default function FseDetails() {
                                     required
                                     id="comp"
                                     name="company_name"
-                                    // value={refcompname}
-                                    // onChange={(e) => {
-                                    //   Setrefcompname(e.target.value);
-                                    // }}
+                                    value={fsedesgination}
+                                    onChange={(e) => {
+                                      Setfsedesgination(e.target.value);
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -343,10 +371,10 @@ export default function FseDetails() {
                                     required
                                     id="exp"
                                     name="total_expernice"
-                                    // value={reftotalexp}
-                                    // onChange={(e) => {
-                                    //   Setreftotalexp(e.target.value);
-                                    // }}
+                                    value={fseemployeeid}
+                                    onChange={(e) => {
+                                      Setfseemployeeid(e.target.value);
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -361,10 +389,10 @@ export default function FseDetails() {
                                     required
                                     id="exp"
                                     name="total_expernice"
-                                    // value={reftotalexp}
-                                    // onChange={(e) => {
-                                    //   Setreftotalexp(e.target.value);
-                                    // }}
+                                    value={fsemobileno}
+                                    onChange={(e) => {
+                                      Setfsemobileno(e.target.value);
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -403,7 +431,9 @@ export default function FseDetails() {
                         {!showedit && (
                           <div className="contact_info_">
                             <div className="mt-2 fsc_code">
-                              <span className="admin_type_value">FSE0033</span>
+                              <span className="admin_type_value">
+                                {fsecodevalue}
+                              </span>
                             </div>
                           </div>
                         )}
@@ -418,12 +448,12 @@ export default function FseDetails() {
                                 type="text"
                                 className="input-area"
                                 required
-                                id="email"
-                                name="email"
-                                // value={refemail}
-                                // onChange={(e) => {
-                                //   Setrefemail(e.target.value);
-                                // }
+                                id="inputName"
+                                name="fsecode"
+                                value={fsecodevalue}
+                                onChange={(e) => {
+                                  Setfsecodevalue(e.target.value);
+                                }}
                               />
                             </div>
                           </div>

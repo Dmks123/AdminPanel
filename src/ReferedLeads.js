@@ -20,10 +20,12 @@ export default function ReferedLeads() {
   console.log("REDD", Id);
   useEffect(() => {
     axios
-      .get("https://pure-wave-48602.herokuapp.com/listofcustomers")
+      .get(
+        `https://pure-wave-48602.herokuapp.com/listofcustomersbyid?partner_id=${Id}`
+      )
       .then((respon) => {
         Setleaddata(respon.data.listofcustomers);
-        console.log("lead data", respon.data.listofcustomers);
+        console.log("lead data", respon);
       });
   }, []);
   return (

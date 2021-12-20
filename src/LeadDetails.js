@@ -41,8 +41,6 @@ export default function LeadDetails() {
 
   const [leadbookingamt, Setleadbookingamt] = useState([]);
   const [leaddpaymentstage, Setleaddpaymentstage] = useState([]);
-  const [leaddpaymentstagefrom, Setleaddpaymentstagefrom] = useState([]);
-  const [leaddpaymentstageto, Setleaddpaymentstageto] = useState([]);
   const [paymentdate, Setpaymentdate] = useState([]);
   // const [paymentmode, Setpaymentmode] = useState([]);
   const [paystage, Setpaystage] = useState([]);
@@ -90,6 +88,8 @@ export default function LeadDetails() {
   const [paymentdate3, Setpaymentdate3] = useState([]);
 
   const [paymentmode1, Setpaymentmode1] = useState([]);
+  const [paymentmode2, Setpaymentmode2] = useState([]);
+  const [paymentmode3, Setpaymentmode3] = useState([]);
 
   const [stage1, Setstage1] = useState([]);
   const [stage2, Setstage2] = useState([]);
@@ -98,6 +98,8 @@ export default function LeadDetails() {
   const [creditedstat1, Setcreditedstat1] = useState([]);
   const [creditedstat2, Setcreditedstat2] = useState([]);
   const [creditedstat3, Setcreditedstat3] = useState([]);
+
+  const [CustomerStatus, SetCustomerStatus] = useState([]);
 
   useEffect(() => {
     // To get data of lead by their ID's
@@ -122,10 +124,24 @@ export default function LeadDetails() {
         Setleadconstructionstage(
           responsedata.data.listofcustomers.construction_stage
         );
-        Setpaymentmode1(responsedata.data.listofcustomers.payment_mode);
+        SetCustomerStatus(responsedata.data.listofcustomers.customerstatus);
+        console.log(
+          "CUSTOMSTATUS",
+          responsedata.data.listofcustomers.customerstatus
+        );
         // Contact info
         Setleademail(responsedata.data.listofcustomers.email);
         Setleadmobileno(responsedata.data.listofcustomers.contact_no);
+        const len = responsedata.data.listofcustomers.stages.length - 1;
+        console.log("looo", len);
+        if (len >= 0) {
+          Setleaddpaymentstage(
+            responsedata.data.listofcustomers.stages[len].stage
+          );
+        } else {
+          // Setleaddpaymentstage("NA");
+          // Setleaddpaymentstagefrom("NA");
+        }
       });
 
     axios
@@ -133,16 +149,18 @@ export default function LeadDetails() {
       .then((responsedatas) => {
         // if first array is there run this
         if (responsedatas.data.Stages[0]) {
+          Setpaymentmode1(responsedatas.data.Stages[0].payment_mode);
           Setpaymentstage1(responsedatas.data.Stages[0].net_earning);
           Setreleaserangefrom1(responsedatas.data.Stages[0].payment_date_from);
           Setreleaserangeto1(responsedatas.data.Stages[0].payment_date_to);
           Setpaymentdate1(responsedatas.data.Stages[0].payment_date);
           Setstage1(responsedatas.data.Stages[0].stage);
           Setcreditedstat1(responsedatas.data.Stages[0].credited);
-          console.log("Reeu", responsedatas.data.Stages[0].credited);
+          console.log("Reeu", responsedatas.data.Stages);
         }
         // If second array has values and populated
         if (responsedatas.data.Stages[1]) {
+          Setpaymentmode2(responsedatas.data.Stages[1].payment_mode);
           Setpaymentstage2(responsedatas.data.Stages[1].net_earning);
 
           Setreleaserangefrom2(responsedatas.data.Stages[1].payment_date_from);
@@ -153,6 +171,7 @@ export default function LeadDetails() {
           Setcreditedstat2(responsedatas.data.Stages[1].credited);
         }
         if (responsedatas.data.Stages[2]) {
+          Setpaymentmode3(responsedatas.data.Stages[2].payment_mode);
           Setpaymentstage3(responsedatas.data.Stages[2].net_earning);
 
           Setreleaserangefrom3(responsedatas.data.Stages[2].payment_date_from);
@@ -186,9 +205,7 @@ export default function LeadDetails() {
       area: leadareasqft,
       booking_amt: leadbookingamt,
       start_date: leadconststartdate,
-      pre: leadprestatusvalue,
-      post: leadpoststatusvalue,
-
+      status: CustomerStatus,
       email: leademail,
       mobile: leadmobileno,
     };
@@ -286,7 +303,7 @@ export default function LeadDetails() {
       payment_date_from: releaserangefrom2,
       payment_date_to: releaserangeto2,
       payment_date: paymentdate2,
-      payment_mode: paymentmode1,
+      payment_mode: paymentmode2,
       construction_stage: leadconstructionstage,
     };
 
@@ -335,7 +352,7 @@ export default function LeadDetails() {
       payment_date_from: releaserangefrom3,
       payment_date_to: releaserangeto3,
       payment_date: paymentdate3,
-      payment_mode: paymentmode1,
+      payment_mode: paymentmode3,
       construction_stage: leadconstructionstage,
     };
 
@@ -390,7 +407,7 @@ export default function LeadDetails() {
           <div className="content-tabs">
             <div>
               <div className="row top_menu_bar">
-                <div className="col-md-9 d-flex align-items-center">
+                <div className="col-md-10 d-flex align-items-center">
                   <Link to="/referedlead" className="partner_back_btn">
                     <span>
                       <ArrowBackIosNewIcon />
@@ -398,28 +415,8 @@ export default function LeadDetails() {
                     </span>
                   </Link>
                 </div>
-                <div className="col-md-3">
-                  <div className="d-flex justify-content-around">
-                    <div className="dropdown verify_btn">
-                      <button
-                        className="btn dropdown-toggle"
-                        type="button"
-                        id="dropdownMenuButton"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        Post
-                        {/* <KeyboardArrowDownIcon /> */}
-                      </button>
-                      <div
-                        className="dropdown-menu"
-                        aria-labelledby="dropdownMenuButton"
-                      >
-                        <a href="">Referal Partners</a>
-                        <a href="">Channel Partners</a>
-                      </div>
-                    </div>
+                <div className="col-md-2">
+                  <div className="d-flex justify-content-end">
                     <button
                       className="delete_btn"
                       data-toggle="modal"
@@ -514,7 +511,7 @@ export default function LeadDetails() {
               </div>
               <div className="partner_details_edit_sec">
                 <div className="row">
-                  <div className="col-md-8">
+                  <div className="col-md-9">
                     <div className="p-3 admin_patrner_personal_info">
                       <div className="d-flex justify-content-between align-items-center">
                         <p className="">Personal Info</p>
@@ -601,7 +598,9 @@ export default function LeadDetails() {
                                   Payment Stage
                                 </p>
                                 <span className="admin_type_value">
-                                  {leaddpaymentstage}
+                                  {leaddpaymentstage != ""
+                                    ? leaddpaymentstage
+                                    : "-"}
                                 </span>
                               </div>
                             </div>
@@ -619,9 +618,7 @@ export default function LeadDetails() {
                               <div>
                                 <p className="m-0 admin_type_heading">Status</p>
                                 <span className="admin_type_value">
-                                  {leadprestatusvalue == ""
-                                    ? leadpoststatusvalue
-                                    : leadprestatusvalue}
+                                  {CustomerStatus != "" ? CustomerStatus : "NA"}
                                 </span>
                               </div>
                             </div>
@@ -758,42 +755,80 @@ export default function LeadDetails() {
                                 <label htmlFor="loc" className="label">
                                   Status
                                 </label>
-                                {leadprestatusvalue != "" ? (
-                                  <input
-                                    type="text"
-                                    className="input-area admin_partner_det_input"
-                                    required
-                                    id="loc"
-                                    name="work_location"
-                                    value={leadprestatusvalue}
-                                    onChange={(e) => {
-                                      Setleadprestatusvalue(e.target.value);
-                                    }}
-                                  />
+                                {leadbookingamt == 0 ? (
+                                  <select
+                                    style={{ width: "100%" }}
+                                    onChange={(e) =>
+                                      SetCustomerStatus(e.target.value)
+                                    }
+                                  >
+                                    <option defaultValue={""}>Select</option>
+                                    <option value="Pre-Contacted">
+                                      Pre-Contacted
+                                    </option>
+                                    <option value="Pre-Fixed meeting">
+                                      Pre-Fixed meeting
+                                    </option>
+                                    <option value="Pre-Technical discussion">
+                                      Pre-Technical discussion
+                                    </option>
+                                    <option value="Pre-First meeting">
+                                      Pre-First meeting
+                                    </option>
+                                    <option value="Pre-Quotation sent">
+                                      Pre-Quotation sent
+                                    </option>
+                                  </select>
                                 ) : (
-                                  <input
-                                    type="text"
-                                    className="input-area admin_partner_det_input"
-                                    required
-                                    id="loc"
-                                    name="work_location"
-                                    value={leadpoststatusvalue}
-                                    onChange={(e) => {
-                                      Setleadpoststatusvalue(e.target.value);
-                                    }}
-                                  />
+                                  // <input
+                                  //   type="text"
+                                  //   className="input-area admin_partner_det_input"
+                                  //   required
+                                  //   id="loc"
+                                  //   name="work_location"
+                                  //   value={leadprestatusvalue}
+                                  //   onChange={(e) => {
+                                  //     Setleadprestatusvalue(e.target.value);
+                                  //   }}
+                                  // />
+                                  <select
+                                    style={{ width: "100%" }}
+                                    onChange={(e) =>
+                                      SetCustomerStatus(e.target.value)
+                                    }
+                                  >
+                                    <option defaultValue={""}>Select</option>
+                                    <option value="Post-Design">
+                                      Post-Design
+                                    </option>
+                                    <option value="Post-Mobilization">
+                                      Post-Mobilization
+                                    </option>
+                                    <option value="Post-Foundation">
+                                      Post-Foundation
+                                    </option>
+                                    <option value="Post-First meeting">
+                                      Post-First meeting
+                                    </option>
+                                    <option value="Post-Ground Floor slab">
+                                      Post-Ground Floor slab
+                                    </option>
+                                    <option value="Post-First Floor">
+                                      Post-First Floor
+                                    </option>
+                                  </select>
+                                  // <input
+                                  //   type="text"
+                                  //   className="input-area admin_partner_det_input"
+                                  //   required
+                                  //   id="loc"
+                                  //   name="work_location"
+                                  //   value={leadpoststatusvalue}
+                                  //   onChange={(e) => {
+                                  //     Setleadpoststatusvalue(e.target.value);
+                                  //   }}
+                                  // />
                                 )}
-                                {/* <input
-                                  type="text"
-                                  className="input-area admin_partner_det_input"
-                                  required
-                                  id="loc"
-                                  name="work_location"
-                                    value={leadprestatusvalue}
-                                    onChange={(e) => {
-                                      Setleadprestatusvalue(e.target.value);
-                                    }}
-                                /> */}
                               </div>
                             </div>
                           </div>
@@ -801,7 +836,7 @@ export default function LeadDetails() {
                       )}
                     </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                     <div className="p-3 admin_patrner_personal_info">
                       <div className="d-flex justify-content-between">
                         <p className="mb-0">Contact Info</p>
@@ -943,7 +978,9 @@ export default function LeadDetails() {
                                         Amount
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentstage1}
+                                        {paymentstage1 != ""
+                                          ? paymentstage1
+                                          : "0"}
                                         /-
                                       </span>
                                     </div>
@@ -954,7 +991,9 @@ export default function LeadDetails() {
                                         Construction Stage
                                       </p>
                                       <span className="admin_type_value">
-                                        {leadconstructionstage}
+                                        {leadconstructionstage != ""
+                                          ? leadconstructionstage
+                                          : "NA"}
                                       </span>
                                     </div>
                                   </div>
@@ -984,7 +1023,9 @@ export default function LeadDetails() {
                                         Payment Date
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentdate1}
+                                        {paymentdate1 != ""
+                                          ? paymentdate1
+                                          : "No date"}
                                       </span>
                                     </div>
                                   </div>
@@ -994,7 +1035,9 @@ export default function LeadDetails() {
                                         Payment Mode
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentmode1}
+                                        {paymentmode1 != ""
+                                          ? paymentmode1
+                                          : "NA"}
                                       </span>
                                     </div>
                                   </div>
@@ -1004,7 +1047,7 @@ export default function LeadDetails() {
                                         Stage
                                       </p>
                                       <span className="admin_type_value">
-                                        {stage1}
+                                        {stage1 != "" ? stage1 : "-"}
                                       </span>
                                     </div>
                                   </div>
@@ -1079,7 +1122,7 @@ export default function LeadDetails() {
                                       required
                                       id="comp"
                                       name="company_name"
-                                      value={leaddpaymentstagefrom}
+                                      value={releaserangefrom1}
                                       onChange={(e) => {
                                         Setreleaserangefrom1(e.target.value);
                                       }}
@@ -1097,7 +1140,7 @@ export default function LeadDetails() {
                                       required
                                       id="comp"
                                       name="company_name"
-                                      value={leaddpaymentstageto}
+                                      value={releaserangeto1}
                                       onChange={(e) => {
                                         Setreleaserangeto1(e.target.value);
                                       }}
@@ -1135,7 +1178,7 @@ export default function LeadDetails() {
                                       name="payment_mode"
                                       value={paymentmode1}
                                       onChange={(e) => {
-                                        1(e.target.value);
+                                        Setpaymentmode1(e.target.value);
                                       }}
                                     />
                                   </div>
@@ -1229,7 +1272,9 @@ export default function LeadDetails() {
                                         Amount
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentstage2}
+                                        {paymentstage2 != ""
+                                          ? paymentstage2
+                                          : "0"}
                                         /-
                                       </span>
                                     </div>
@@ -1240,7 +1285,9 @@ export default function LeadDetails() {
                                         Construction Stage
                                       </p>
                                       <span className="admin_type_value">
-                                        {leadconstructionstage}
+                                        {leadconstructionstage != ""
+                                          ? leadconstructionstage
+                                          : "Not available"}
                                       </span>
                                     </div>
                                   </div>
@@ -1270,7 +1317,9 @@ export default function LeadDetails() {
                                         Payment Date
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentdate2}
+                                        {paymentdate2 != ""
+                                          ? paymentdate2
+                                          : "No date"}
                                       </span>
                                     </div>
                                   </div>
@@ -1280,7 +1329,9 @@ export default function LeadDetails() {
                                         Payment Mode
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentmode1}
+                                        {paymentmode2 != ""
+                                          ? paymentmode2
+                                          : "NA"}
                                       </span>
                                     </div>
                                   </div>
@@ -1290,7 +1341,9 @@ export default function LeadDetails() {
                                         Stage
                                       </p>
                                       <span className="admin_type_value">
-                                        {stage2}
+                                        {stage2 != ""
+                                          ? stage2
+                                          : "Not specified"}
                                       </span>
                                     </div>
                                   </div>
@@ -1419,9 +1472,9 @@ export default function LeadDetails() {
                                       required
                                       id="comp"
                                       name="payment_mode"
-                                      value={paymentmode1}
+                                      value={paymentmode2}
                                       onChange={(e) => {
-                                        Setpaymentmode1(e.target.value);
+                                        Setpaymentmode2(e.target.value);
                                       }}
                                     />
                                   </div>
@@ -1515,7 +1568,9 @@ export default function LeadDetails() {
                                         Amount
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentstage3}
+                                        {paymentstage3 != ""
+                                          ? paymentstage3
+                                          : "0"}
                                         /-
                                       </span>
                                     </div>
@@ -1526,7 +1581,9 @@ export default function LeadDetails() {
                                         Construction Stage
                                       </p>
                                       <span className="admin_type_value">
-                                        {leadconstructionstage}
+                                        {leadconstructionstage != ""
+                                          ? leadconstructionstage
+                                          : "Not available"}
                                       </span>
                                     </div>
                                   </div>
@@ -1556,7 +1613,9 @@ export default function LeadDetails() {
                                         Payment Date
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentdate3}
+                                        {paymentdate3 != ""
+                                          ? paymentdate3
+                                          : "No Date"}
                                       </span>
                                     </div>
                                   </div>
@@ -1566,7 +1625,9 @@ export default function LeadDetails() {
                                         Payment Mode
                                       </p>
                                       <span className="admin_type_value">
-                                        {paymentmode1}
+                                        {paymentmode3 != ""
+                                          ? paymentmode3
+                                          : "NA"}
                                       </span>
                                     </div>
                                   </div>
@@ -1576,7 +1637,9 @@ export default function LeadDetails() {
                                         Stage
                                       </p>
                                       <span className="admin_type_value">
-                                        {stage3}
+                                        {stage3 != ""
+                                          ? stage3
+                                          : "Not specified"}
                                       </span>
                                     </div>
                                   </div>
@@ -1705,9 +1768,9 @@ export default function LeadDetails() {
                                       required
                                       id="comp"
                                       name="payment_mode"
-                                      value={paymentmode1}
+                                      value={paymentmode3}
                                       onChange={(e) => {
-                                        Setpaymentmode1(e.target.value);
+                                        Setpaymentmode3(e.target.value);
                                       }}
                                     />
                                   </div>
@@ -1822,7 +1885,9 @@ export default function LeadDetails() {
                                       Approved Value
                                     </p>
                                     <span className="admin_type_value">
-                                      {approvedvalue}
+                                      {approvedvalue != ""
+                                        ? approvedvalue
+                                        : "0"}
                                     </span>
                                   </div>
                                 </div>
